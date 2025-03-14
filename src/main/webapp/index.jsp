@@ -89,7 +89,7 @@
 	
 	<h2>모든 비디오 선택</h2>
 	<a href = "video?act=selectAll">
-		Video1
+		모든 비디오
 	</a>
 </body>
 </html>
