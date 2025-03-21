@@ -51,4 +51,3 @@ CREATE TABLE following (
     FOREIGN KEY (follower_id) REFERENCES user(user_id),
     FOREIGN KEY (followee_id) REFERENCES user(user_id)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4;
-

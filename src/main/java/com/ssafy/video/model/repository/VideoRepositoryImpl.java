@@ -2,7 +2,10 @@ package com.ssafy.video.model.repository;
 import com.ssafy.review.model.dto.Review;
 import com.ssafy.review.model.repository.ReviewRepository;
 import com.ssafy.review.model.repository.ReviewRepositoryImpl;
+import com.ssafy.util.DBUtil;
 import com.ssafy.video.model.dto.Video;
+
+import java.sql.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,67 +16,122 @@ import com.ssafy.video.model.dto.Video;
 
 public class VideoRepositoryImpl implements VideoRepository{
 	// 영화를 담을 객체를 Singleton Pattern으로 관리해준다.
-	private static VideoRepository repo = new VideoRepositoryImpl();
+	private static VideoRepository dao = new VideoRepositoryImpl();
 	private static ReviewRepository repoReview = ReviewRepositoryImpl.getInstance();
 	
-	// Video를 담을 Map을 형성해준다.
-	private Map<Integer, Video> map = new HashMap<>();
 	
-	// 생성한 객체에 Map 형식으로 데이터를 관리한다.
 	private VideoRepositoryImpl() {
-		map.put(1, new Video("https://www.youtube.com/watch?v=7TLk7pscICk", "복부짱", 10, "복부", "누워서 5분 복부"));
-		map.put(2, new Video("https://www.youtube.com/watch?v=cMkZ6A7wngk", "전신짱", 15, "전신", "전신 올인원"));
-		map.put(3, new Video("https://www.youtube.com/watch?v=4kZHHPH6heY", "전신근력짱", 18, "전신", "전신운동 근력 유산소"));
-		map.put(4, new Video("https://www.youtube.com/watch?v=DehgWgRde-I", "복부킹왕짱", 25, "복부", "악마의 복근 운동"));
-		map.put(5, new Video("https://www.youtube.com/watch?v=DWYDL-WxF1U", "하체짱", 35, "하체", "하체날, 딱 10분밖에 없다면-스쿼트 10가지 동작"));
-		map.put(6, new Video("https://www.youtube.com/watch?v=Hx8Lc_0hUaI", "상체짱", 28, "상체", "운동할 시간이 없다는 사람에게 보여주세요... 제발"));
-		map.put(7, new Video("https://www.youtube.com/watch?v=C4_2puAkxfs", "하체킹왕짱", 40, "하체", "하루 한 번! 꼭 해야하는 10분 기본 하체근력 운동 홈트 (층간소음🙅🏻‍♀️)"));
-		map.put(8, new Video("https://www.youtube.com/watch?v=UdvFhqxaBNo&list=PL2OrN5q5pzIvKy9bqhqYkZgklLZLVG8bF&index=1", "복부킹왕짱", 3, "복부", "하복부 지방 확실하게 태우는 단 10분 운동 - No 반복, No 휴식"));
-		
 	}
 	
 	public static VideoRepository getInstance() {
-		return repo;
+		return dao;
 	}
+	
+	
+	// DB를 생성 및 연결하고 해제하는 객체를 불러온다.
+	DBUtil util = DBUtil.getInstance();
+	
 	
 	@Override
 	public List<Video> selectAll() {
+		List<Video> list = new ArrayList<>();
+		String sql = "SELECT * FROM video";
+		Connection conn = null;
+		Statement st = null;
+		ResultSet rs = null;
 		
-		// 모든 key에 대한 데이터를 ArrayList에 넣고, 반환한다.
-		List<Video> tmp = new ArrayList<>();
-		for(int key: map.keySet()) {
-			tmp.add(map.get(key));
+		try {
+			// DB와 연결을 생성하고, statement를 생성하고 rs에 결과를 받는다.
+			conn = util.getConnection();
+			st = conn.createStatement();
+			rs = st.executeQuery(sql);
+			
+			// rs에 받은 결과를 video에 담고, list에 추가한다.
+			while(rs.next()) {
+				Video video = new Video(rs.getString("youtube_id"), rs.getString("channel_name"), rs.getInt("view_count"), rs.getString("fitpart_name"), rs.getString("title"));		
+				
+				list.add(video);
+			}
+			
+			
+		} catch (SQLException e) {
+			
+			e.printStackTrace();
+		}finally {
+			util.close(rs, st, conn);
 		}
 		
-		return tmp;
+		return list;
+
 	}
 
 	// 개별 video 불러오기 
 	@Override
 	public Video select(String youtubeId) {
-		// youtubeId 기반으로 일치하는 video 리턴
-		Video vid = null;
-		for(int key: map.keySet()) {
-			if (map.get(key).getYoutubeId() == youtubeId) {
-				vid = map.get(key);			
+		Connection conn = null;
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+		
+		String sql = "SELECT * FROM video WHERE youtube_id=?";
+		
+		Video video = null;
+		try {
+			// 첫번째 물음표에 들어갈 변수를 설정한다.
+			conn = util.getConnection();
+			pst = conn.prepareStatement(sql);
+			pst.setString(1, youtubeId);
+			
+			rs = pst.executeQuery();
+			
+			// 개별 데이터가 존재한다면 video에 담는다.
+			if(rs.next()) {
+				video = new Video(rs.getString("youtube_id"), rs.getString("channel_name"), rs.getInt("view_count"), rs.getString("fitpart_name"), rs.getString("title"));		
+				
 			}
+			
+		}catch (SQLException e) {
+			e.printStackTrace();
+		}finally {
+			util.close(rs, pst, conn);
 		}
-		return vid;
+		
+		return video;
+		
 	}
 
 	@Override
 	public boolean updateViewCnt(String youtubeId) {
-		// TODO Auto-generated method stub
-		return false;
+		Connection conn = null;
+		PreparedStatement pst = null;
+		int result = 0;
+		// ResultSet rs = null;
+		
+		
+		String sql = "UPDATE video SET view_count = view_count + 1 WHERE youtube_id=?";
+		
+		try {
+			conn = util.getConnection();
+			pst = conn.prepareStatement(sql);
+			pst.setString( 1, youtubeId);
+			
+			result = pst.executeUpdate(); 
+			
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+		finally {
+			util.close(pst, conn);
+		}			
+		
+		return result == 1;
+		
 	}
 
 	// youtubeId와 같은 id 가지는 리뷰 불러오기 
 	@Override
-	public List<Review> getReviewbyId(String youtubeId) {
-		// reviewrepo와 소통해 youtubeId와 일치하는 리뷰 찾아서 가져오기 
-		List<Review> list = repoReview.getReviewsbyId(youtubeId);
-		
-		return list;
+	public List<Review> getReviewbyId(String youtubeId){
+		throw new UnsupportedOperationException();
 	}
 	
 }

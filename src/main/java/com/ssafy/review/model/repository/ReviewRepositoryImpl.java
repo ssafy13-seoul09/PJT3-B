@@ -3,26 +3,25 @@
 // repo > db친화, 조회(전체/개별), 수정, 삭제
 package com.ssafy.review.model.repository;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.ssafy.review.model.dto.Review;
+import com.ssafy.util.DBUtil;
 
 public class ReviewRepositoryImpl implements ReviewRepository {
-
+	
+	// repo 싱글턴으로 관리  
+	private final DBUtil util = DBUtil.getInstance();
 	// 싱글턴으로 리뷰 관리 > 전체 리뷰 관리할 레포 
 	private static ReviewRepository repo = new ReviewRepositoryImpl();
-	// Integer 연번 
-	private Map<Integer, Review> map = new HashMap<>();
 	
-	// 생성자: 가라로 안에 리뷰들 넣어두기 일단 3개정도만 ?
 	private ReviewRepositoryImpl() {
-		// 생성자는 그냥 가라로 만들어주깅 
-		map.put(1, new Review(1, "힘들어요", "ssafy", "엉엉잉잉앙앙", null, 0, "https://www.youtube.com/watch?v=7TLk7pscICk"));
-		map.put(2, new Review(0, "운동해서 놀러갈래", "ssafy1", "한강 피크닉가자 낄낄", null, 0, "https://www.youtube.com/watch?v=7TLk7pscICk"));
-		map.put(3, new Review(0, "그럴까요", "ssafy2", "사실 집이 제일 좋아 후엥", null, 0, "https://www.youtube.com/watch?v=cMkZ6A7wngk"));
+		
 	}
 	
 	// 싱글턴 -> 인스턴스 하나 생성
@@ -35,8 +34,30 @@ public class ReviewRepositoryImpl implements ReviewRepository {
 	public List<Review> selectAll() {
 		
 		List<Review> reviewList = new ArrayList<>();
-		for (int key : map.keySet()) {
-			reviewList.add(map.get(key));
+		
+		// 모든 리뷰 반환하기
+ 		String sql = "SELECT * FROM review";
+ 		Connection conn = null; //DB 연결 객체
+ 		PreparedStatement pstmt = null; //sql문 실행 객체
+ 		ResultSet rs = null; //sql문 실행 결과 집합
+ 		
+ 		// 리뷰 전체 반환
+ 		try {
+ 			
+ 			conn = util.getConnection(); // 연결 객체 얻기
+ 			pstmt = conn.prepareStatement(sql);
+ 			rs = pstmt.executeQuery(); // sql 실행
+ 			
+			while(rs.next()) {
+				
+				Review review = new Review(rs.getInt("review_id"), rs.getString("title"), rs.getString("author_id"), rs.getString("content"), rs.getTimestamp("created_at"), rs.getInt("view_count"), rs.getString("youtube_id"));
+				// reviewId autoincrement인데 set 할 필요?
+				reviewList.add(review);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			util.close(rs, pstmt, conn); // 자원 반환
 		}
 		
 		return reviewList;
@@ -47,11 +68,37 @@ public class ReviewRepositoryImpl implements ReviewRepository {
 	public List<Review> getReviewsbyId(String youtubeId) {
 		List<Review> reviewList = new ArrayList<>();
 		
-		// db에 있는 모든 리뷰 리스트 중 youtubeId와 일치하는 것 찾아서 리스트로 리턴
-		for (int key : map.keySet()) {
-			if (youtubeId == map.get(key).getYoutubeId()) {
-				reviewList.add(map.get(key));
+		// 모든 리뷰 반환하기
+ 		String sql = "SELECT * FROM review WHERE youtube_id = ?";
+ 		Connection conn = null; //DB 연결 객체
+ 		PreparedStatement pstmt = null; //sql문 실행 객체
+ 		ResultSet rs = null; //sql문 실행 결과 집합
+ 		
+ 		// 리뷰 전체 반환
+ 		try {
+ 			
+ 			conn = util.getConnection(); // 연결 객체 얻기
+ 			pstmt = conn.prepareStatement(sql);
+ 			// pstmt string 
+ 			pstmt.setString(1, youtubeId);
+ 			rs = pstmt.executeQuery(); // sql 실행
+ 			
+			while(rs.next()) {
+				Review review = new Review(rs.getInt("review_id"), 
+						rs.getString("title"), 
+						rs.getString("author_id"), 
+						rs.getString("content"), 
+						rs.getTimestamp("created_at"), 
+						rs.getInt("view_count"), 
+						rs.getString("youtube_id"));
+
+				
+				reviewList.add(review);
 			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			util.close(rs, pstmt, conn); // 자원 반환
 		}
 		
 		return reviewList;
@@ -60,50 +107,147 @@ public class ReviewRepositoryImpl implements ReviewRepository {
 	// 리뷰 1개 찾기 
 	@Override
 	public Review select(int reviewId) {
-		return map.get(reviewId);
+ 		String sql = "SELECT * FROM review WHERE review_id = ?";
+ 		Connection conn = null; //DB 연결 객체
+ 		PreparedStatement pstmt = null; //sql문 실행 객체
+ 		ResultSet rs = null; //sql문 실행 결과 집합
+ 		Review review = null;
+		try {
+ 			conn = util.getConnection(); // 연결 객체 얻기
+ 			pstmt = conn.prepareStatement(sql);
+ 			pstmt.setInt(1, reviewId);
+ 			rs = pstmt.executeQuery(); // sql 실행
+ 			
+			while(rs.next()) {
+				review = new Review(rs.getInt("review_id"), 
+						rs.getString("title"), 
+						rs.getString("author_id"), 
+						rs.getString("content"), 
+						rs.getTimestamp("created_at"), 
+						rs.getInt("view_count"), 
+						rs.getString("youtube_id"));
+			}
+ 			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			util.close(rs, pstmt, conn); // 자원 반환
+		}
+		
+		return review;
 	}
 
-	// 생성한 리뷰 map에 추가 
+	// 리뷰 새로 생성 
 	@Override
 	public boolean insertReview(Review review) {
-		// 이미 있는 id면 false 
-		if (map.containsKey(review.getReviewId())) return false;
-		// map에 연번과 리뷰내용 추가 
-		map.put(review.getReviewId(), review);
-		return true;
+		
+ 		String sql = "INSERT INTO review(youtube_id, author_id, title, content) VALUES(?, ?, ?, ?)";
+
+ 		Connection conn = null;
+ 		PreparedStatement pstmt = null;
+ 		boolean result = false;
+ 		
+ 		try {
+ 			conn = util.getConnection();
+ 			pstmt = conn.prepareStatement(sql);
+ 			pstmt.setString(1, review.getYoutubeId());
+ 			pstmt.setString(2, review.getAuthorId());
+ 			pstmt.setString(3, review.getTitle());
+ 			pstmt.setString(4, review.getContents());
+ 			// sql 실행 결과 영향받은 행 수가 0 이상인 경우 정상 실행
+			// executeupdate의 리턴값은 정상적으로 db에 업데이트된 행 개수 
+ 			result = pstmt.executeUpdate() > 0 ? true : false;
+			
+ 		} catch (SQLException e) {
+ 			e.printStackTrace();
+ 		} finally {
+ 	 		util.close(pstmt, conn);
+ 		}
+ 		
+		return result;
 	}
 
 	// 개별 리뷰 수정 
 	@Override
 	public boolean updateReview(Review review) {
-		// id 기반 수정 > 찾는 id 없으면 false 
-		if (!map.containsKey(review.getReviewId())) return false;
-		// 새 리뷰 변경
-		map.put(review.getReviewId(), review);
-		return true;
+		// 수정할 리뷰 내용 불러온 후 수정하기 ? or 덮어씌우기? 
+		// id 기반으로 리뷰 찾아야 하니까 id도 받아야쥐? 
+ 		String sql = "UPDATE review SET author_id=?, title=?, content=? WHERE review_id=?";
+
+ 		Connection conn = null;
+ 		PreparedStatement pstmt = null;
+ 		boolean result = false;
+ 		
+ 		try {
+ 			conn = util.getConnection();
+ 			pstmt = conn.prepareStatement(sql);
+ 			pstmt.setString(1, review.getAuthorId());
+ 			pstmt.setString(2, review.getTitle());
+ 			pstmt.setString(3, review.getContents());
+ 			pstmt.setInt(4, review.getReviewId());
+ 			// sql 실행 결과 영향받은 행 수가 0 이상인 경우 정상 실행
+			// executeupdate의 리턴값은 정상적으로 db에 업데이트된 행 개수 
+ 			result = pstmt.executeUpdate() > 0 ? true : false;
+			
+ 		} catch (SQLException e) {
+ 			e.printStackTrace();
+ 		} finally {
+ 	 		util.close(pstmt, conn);
+ 		}
+ 		
+		return result;
+		
 	}
 
 	// 개별 리뷰 삭제
 	@Override
 	public boolean deleteReview(int reviewId) {
-		// 찾는 ID 없으면
-		if (!map.containsKey(reviewId)) return false;
-		map.remove(reviewId);
-		return true;
+ 		String sql = "DELETE FROM review WHERE review_id=?";
+
+ 		Connection conn = null;
+ 		PreparedStatement pstmt = null;
+ 		boolean result = false;
+ 		
+ 		try {
+ 			conn = util.getConnection();
+ 			pstmt = conn.prepareStatement(sql);
+ 			pstmt.setInt(1, reviewId);
+ 			
+ 			result = pstmt.executeUpdate() > 0 ? true : false;
+			
+ 		} catch (SQLException e) {
+ 			e.printStackTrace();
+ 		} finally {
+ 	 		util.close(pstmt, conn);
+ 		}
+ 		
+		return result;
+		
 	}
 
 	// 리뷰 조회당 조회수 늘리기 
 	@Override
 	public boolean updateViewCnt(int reviewId) {
-		// 찾는 ID 없으면
-		if (!map.containsKey(reviewId)) return false;
-		
-		// 리뷰 객체 가져오기
-		Review review = map.get(reviewId);
-		
-		// 조회수 올리기
-		review.setViewCnt(review.getViewCnt() + 1);
-		return true;
+ 		String sql = "UPDATE review SET view_count = view_count+1 WHERE review_id=?";
+
+ 		Connection conn = null;
+ 		PreparedStatement pstmt = null;
+ 		boolean result = false;
+ 		
+ 		try {
+ 			conn = util.getConnection();
+ 			pstmt = conn.prepareStatement(sql);
+ 			pstmt.setInt(1, reviewId);
+ 			
+ 			result = pstmt.executeUpdate() == 1;
+			
+ 		} catch (SQLException e) {
+ 			e.printStackTrace();
+ 		} finally {
+ 	 		util.close(pstmt, conn);
+ 		}
+ 		
+		return result;
 	}
 
 }

@@ -10,6 +10,8 @@
 	<h2>리뷰 등록</h2>
 	<form action="review" method="POST">
 		<input type="hidden" name="act" value="write">
+		<!-- 여기 아래에서 youtubeId 자동으로 뜯어와야 함 -->
+		<input type="hidden" name="youtubeId" value="???">		
 		<div>제목 : <input type="text" name="title"></div>
 		<!-- 기본 익명, 로그인 성공 시 유저이름으로 작성 -->
 		<div>작성자 : <input type="text" name="writer" value="익명"></div>

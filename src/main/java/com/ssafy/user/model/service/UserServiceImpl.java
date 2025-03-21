@@ -1,19 +1,15 @@
 package com.ssafy.user.model.service;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import com.ssafy.user.model.dto.User;
-import com.ssafy.user.model.repository.MemoryUserRepository;
+import com.ssafy.user.model.repository.UserRepositoryImpl;
 import com.ssafy.user.model.repository.UserRepository;
-
-import jakarta.servlet.http.HttpServletRequest;
 
 public class UserServiceImpl implements UserService {
 
     private static final UserService INSTANCE = new UserServiceImpl();
-    private final UserRepository repo = MemoryUserRepository.getInstance();
+    private final UserRepository repo = UserRepositoryImpl.getInstance();
 
     private UserServiceImpl() {
     }

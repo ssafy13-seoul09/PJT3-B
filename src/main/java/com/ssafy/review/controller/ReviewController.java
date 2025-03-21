@@ -1,7 +1,7 @@
 package com.ssafy.review.controller;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
 
 import com.ssafy.review.model.dto.Review;
 import com.ssafy.review.model.service.ReviewService;
@@ -13,6 +13,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 // review 어노테이션 마즘??? 
 @WebServlet("/review")
@@ -67,6 +68,7 @@ public class ReviewController extends HttpServlet {
 	}
 
 	// 전체 리뷰 보여주기 >> 비디오당?? 일단 전체 목록 가져와보기
+	// 여기서 videoId 전달받아야 함
 	private void doList(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		req.setAttribute("list", service.selectAll());
 		req.getRequestDispatcher("WEB-INF/video/reviewList.jsp").forward(req, resp);
@@ -80,21 +82,20 @@ public class ReviewController extends HttpServlet {
 
 	// 작성 
 	private void doWrite(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-		// 그럼 여기서 id, ..., 다 만들어야 함?? 
+		// 그럼 여기서 id, ..., 다 만들어야 함??
+		HttpSession session = req.getSession();
 		String title = req.getParameter("title");
-		String writer = req.getParameter("writer");
+		String writer = (String) session.getAttribute("loginUser");
 		String content = req.getParameter("content");
 		
-//		Review review = new Review(0, title, writer, content);
-		Review review = new Review(1, title, writer, content, null, 0, "https://www.youtube.com/watch?v=7TLk7pscICk");
+        // 현재 시간 생성
+        Timestamp now = new Timestamp(System.currentTimeMillis());
+        
+		Review review = new Review(0, title, writer, content, now, 0, req.getParameter("youtubeId"));
 		
 		//게시글 등록: 서비스 호출
 		service.insertReview(review);
-		
-		// 추가 기능?
-		// 게시글 상세보기
-		
-		
+
 		// 게시글 전체보기
 		resp.sendRedirect("review?act=list");
 	}
@@ -124,7 +125,6 @@ public class ReviewController extends HttpServlet {
         
         review.setTitle(title);
         review.setAuthorId(writer);
-        review.setCreatedAt(LocalDateTime.now());
         review.setContents(contents);
         // 업데이트 수행 
         service.updateReview(review);
@@ -142,6 +142,7 @@ public class ReviewController extends HttpServlet {
 	private void doDetail(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		int reviewId = Integer.parseInt(req.getParameter("reviewId"));
 		
+		service.updateViewCnt(reviewId);
 		// 수정할 리뷰 선택 후 띄워주기
 		Review review = service.select(reviewId);
 		req.setAttribute("review", review);

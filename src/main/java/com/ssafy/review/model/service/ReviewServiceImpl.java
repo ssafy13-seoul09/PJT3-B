@@ -28,8 +28,8 @@ public class ReviewServiceImpl implements ReviewService {
 	}
 
 	@Override
-	public void getReviewsbyId(String youtubeId) {
-		repo.getReviewsbyId(youtubeId);
+	public List<Review> getReviewsbyId(String youtubeId) {
+		return repo.getReviewsbyId(youtubeId);
 	}
 	
 	@Override
@@ -64,6 +64,12 @@ public class ReviewServiceImpl implements ReviewService {
 		if (reviewId <= 0) return false;
 		repo.deleteReview(reviewId);
 		return true;
+	}
+
+	@Override
+	public boolean updateViewCnt(int reviewId) {
+		if (reviewId <= 0) return false;
+		return repo.updateViewCnt(reviewId);
 	}
 
 }

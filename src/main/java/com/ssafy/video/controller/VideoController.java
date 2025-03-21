@@ -6,6 +6,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.ssafy.review.model.dto.Review;
+import com.ssafy.review.model.service.ReviewService;
+import com.ssafy.review.model.service.ReviewServiceImpl;
 import com.ssafy.video.model.dto.Video;
 import com.ssafy.video.model.service.VideoService;
 import com.ssafy.video.model.service.VideoServiceImpl;
@@ -21,7 +23,7 @@ import jakarta.servlet.http.HttpServletResponse;
 public class VideoController extends HttpServlet{
 	private static final long serialVersionUID = 1L;
 	private VideoService service = VideoServiceImpl.getInstance();
-	
+	private ReviewService Rservice = ReviewServiceImpl.getInstance();
 	
 	@Override
 	protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -57,10 +59,15 @@ public class VideoController extends HttpServlet{
 	protected void doReview(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		String youtubeId = req.getParameter("youtubeId");
 		
+		List<Review> reviewList = Rservice.getReviewsbyId(youtubeId);
+		service.updateViewCnt(youtubeId);
 		Video selVid = service.select(youtubeId);
-		
+
+		// 리뷰 불러오기 위함
 		req.setAttribute("selVid", selVid);
+		req.setAttribute("list", reviewList);
 		
+		// reviewList.jsp로 넘겨주기 > detail로 이름 바꾸는게 좋나?? (나중에)
 		RequestDispatcher disp = req.getRequestDispatcher("/WEB-INF/video/reviewList.jsp");
 		disp.forward(req, resp);
 		

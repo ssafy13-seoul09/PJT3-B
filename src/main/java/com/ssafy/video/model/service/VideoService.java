@@ -20,5 +20,9 @@ public interface VideoService {
 	
 	// 개별 video 가져오기
 	public abstract Video select(String youtubeId);
+	
+	// video 조회수 올리기
+	public boolean updateViewCnt(String youtubeId);
+
 
 }

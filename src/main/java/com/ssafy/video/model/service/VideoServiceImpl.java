@@ -81,6 +81,14 @@ public class VideoServiceImpl implements VideoService{
   }  
 
 
+	@Override
+	public boolean updateViewCnt(String youtubeId) {
+		// 조회수가 업데이트 됐는지를 확인할 수 있는 boolean값을 되돌려주고, 실제 업데이트는 controller에서 하는 것이 좋을 것이다.
+		// 조회수가 업데이트 안 됐을 때를 대비해서, boolean값만 받는 것이 좋을 것이다.
+		return repo.updateViewCnt(youtubeId);
+	}
+	
+	
 	public void getReviewbyId(String youtubeId) {
 		
 		// db에서 가져와야 하므로 repo 호출  

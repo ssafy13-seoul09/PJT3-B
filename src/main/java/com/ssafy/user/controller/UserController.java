@@ -185,6 +185,8 @@ public class UserController extends HttpServlet {
         String userId = req.getSession().getAttribute("loginUser").toString();
         String videoId = req.getParameter("id");
         userService.likeVideo(userId, videoId);
+        
+        
 
         resp.sendRedirect("user?act=likedvideolist");
 	}

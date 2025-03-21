@@ -1,7 +1,8 @@
 package com.ssafy.review.model.dto;
 
+import java.sql.Timestamp;
 //import java.sql.Date;
-import java.time.LocalDateTime;
+//import java.time.LocalDateTime;
 
 // reviewcontroller: 개별 리뷰 조회, 생성, 수정
 
@@ -13,7 +14,7 @@ public class Review {
 	private String authorId; // 쓰니 > userId와 동일 
 	private String contents; // 내용
 	// 객체명 다르면 찾아보기
-	private LocalDateTime createdAt;
+	private Timestamp createdAt; // localdatetime -> timestamp로 변경
 	private int viewCnt;
 	private String youtubeId; // FK로 video로 이어 1:N 관계 만들기 
 	
@@ -24,7 +25,7 @@ public class Review {
 	// 입력받아야 하는 항목 3개
 	// id, createdat같이 자동으로 돌아가는건 사실 상관업써
 	// 어차피 객체 만들 때 같이 생성되기 땜무네
-	public Review(int id, String title, String authorId, String contents, LocalDateTime createdAt,  int viewCnt, String youtubeId) {
+	public Review(int id, String title, String authorId, String contents, Timestamp createdAt,  int viewCnt, String youtubeId) {
 		this.reviewId = id;
 		this.title = title;
 		// authorId 지금 받는게 맞는건지?
@@ -77,12 +78,12 @@ public class Review {
 		this.contents = contents;
 	}
 
-	public LocalDateTime getCreatedAt() {
+	public Timestamp getCreatedAt() {
 		return createdAt;
 	}
 
-	public void setCreatedAt(LocalDateTime createdAt) {
-		this.createdAt = createdAt;
+	public void setCreatedAt(Timestamp timestamp) {
+		this.createdAt = timestamp;
 	}
 
 	public int getViewCnt() {
@@ -99,6 +100,12 @@ public class Review {
 
 	public void setYoutubeId(String youtubeId) {
 		this.youtubeId = youtubeId;
+	}
+
+	@Override
+	public String toString() {
+		return "Review [reviewId=" + reviewId + ", title=" + title + ", authorId=" + authorId + ", contents=" + contents
+				+ ", createdAt=" + createdAt + ", viewCnt=" + viewCnt + ", youtubeId=" + youtubeId + "]";
 	}
 	
 }

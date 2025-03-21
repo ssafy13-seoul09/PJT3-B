@@ -11,7 +11,7 @@ public interface ReviewService {
 	public abstract List<Review> selectAll();
 
 	// 리뷰 조회 > youtubeId와 일치하는 리뷰 찾기 (video와 소통)
-	public abstract void getReviewsbyId(String youtubeId);
+	public abstract List<Review> getReviewsbyId(String youtubeId);
 	
 	// id 기반으로 리뷰 1개 찾기
 	public abstract Review select(int reviewId);
@@ -24,6 +24,8 @@ public interface ReviewService {
 	
 	// 리뷰 삭제
 	public abstract boolean removeReview(int reviewId);
+	
+	public abstract boolean updateViewCnt(int reviewId);
 	
 	
 }
