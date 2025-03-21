@@ -21,10 +21,7 @@ import jakarta.servlet.http.HttpServletResponse;
 public class VideoController extends HttpServlet{
 	private static final long serialVersionUID = 1L;
 	private VideoService service = VideoServiceImpl.getInstance();
-	private static ArrayList<Video> fullBody = new ArrayList<>();
-	private static ArrayList<Video> upperBody = new ArrayList<>();
-	private static ArrayList<Video> lowerBody = new ArrayList<>();
-	private static ArrayList<Video> abdomen = new ArrayList<>();
+	
 	
 	@Override
 	protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -43,13 +40,29 @@ public class VideoController extends HttpServlet{
 			doSelectAll(req,resp);
 			break;
 			
+		case "reviewPage":
+			doReview(req,resp);
+			break;
+		
 		case "getReview": 
 			doGetReview(req, resp);
 			
 		case "selectVid":
 			doSelectVid(req, resp);
-		}
+		}	
+	}
+
+  // 리뷰 페이지로 넘어간다.
+	// parameter로 받은 youtubeId와 동일한 youtubeId를 가진 Video를 request에 담아서 보낸다.
+	protected void doReview(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		String youtubeId = req.getParameter("youtubeId");
 		
+		Video selVid = service.select(youtubeId);
+		
+		req.setAttribute("selVid", selVid);
+		
+		RequestDispatcher disp = req.getRequestDispatcher("/WEB-INF/video/reviewList.jsp");
+		disp.forward(req, resp);
 		
 	}
 
@@ -57,10 +70,14 @@ public class VideoController extends HttpServlet{
 	protected void doFavoriteList(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		
 		List<Video> allVideos = service.selectAll();
-		System.out.println(allVideos);
 		
+		List<Video> popVideos = service.selectPopularVideos();
 		
-		RequestDispatcher disp = req.getRequestDispatcher("/WEB-INF/video/reviewList.jsp");
+		req.setAttribute("popVideos", popVideos);
+		
+		// RequestDispatcher disp = req.getRequestDispatcher("/WEB-INF/video/reviewList.jsp");
+		RequestDispatcher disp = req.getRequestDispatcher("/");
+		
 		disp.forward(req,resp);
 	
 		
@@ -68,10 +85,17 @@ public class VideoController extends HttpServlet{
 	
 	// 부위별로 선택해서 출력한다.
 	protected void doBodypartList(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		ArrayList<Video> fullBody = new ArrayList<>();
+		ArrayList<Video> upperBody = new ArrayList<>();
+		ArrayList<Video> lowerBody = new ArrayList<>();
+		ArrayList<Video> abdomen = new ArrayList<>();
+		
 		String bodyPart = req.getParameter("bodyPart");
 		
 		List<Video> allVideos = service.selectAll();
 		int len = allVideos.size();
+		
+		// System.out.println(allVideos);
 		
 		for(int i=0; i<len; i++) {
 			if(allVideos.get(i).getFitPartName().equals("전신")) {
@@ -83,10 +107,14 @@ public class VideoController extends HttpServlet{
 			}else if(allVideos.get(i).getFitPartName().equals("상체")){
 				upperBody.add(allVideos.get(i));
 			}
-			
-			
-			//System.out.println(video);
+				//System.out.println(video);
 		}
+		
+		/*
+		 * System.out.println("------"); System.out.println(fullBody);
+		 * System.out.println(upperBody); System.out.println(lowerBody);
+		 * System.out.println(abdomen);
+		 */
 		
 		// 받아오는 query 값에 따라, req에 담는 정보를 다르게 한다.
 		switch(bodyPart) {
@@ -94,14 +122,17 @@ public class VideoController extends HttpServlet{
 				req.setAttribute("fullBody", fullBody);
 				System.out.println(fullBody);
 				break;
+				
 			case "복부":
 				req.setAttribute("abdomen", abdomen);
 				System.out.println(abdomen);
 				break;
+				
 			case "상체":
 				req.setAttribute("upperBody", upperBody);
 				System.out.println(upperBody);
 				break;
+				
 			case "하체":
 				req.setAttribute("lowerBody", lowerBody);
 				System.out.println(lowerBody);

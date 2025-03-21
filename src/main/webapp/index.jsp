@@ -12,64 +12,99 @@
 </head>
 <body>
 	<h2>최근 가장 많이 본 영상</h2>
+	<a href = "video?act=favoriteList">
+		인기 있는 비디오
+	</a>
 	
-	<%
-		// req에서 받은 데이터를 pageContext에서 변수로 저장하고, 하나씩 출력한다.
-		List<Video> fullBodyList = (List<Video>)request.getAttribute("fullBody");	
-		List<Video> upperBodyList = (List<Video>)request.getAttribute("upperBody");
-		List<Video> lowerBodyList = (List<Video>)request.getAttribute("lowerBody");	
-		List<Video> abdomenList = (List<Video>)request.getAttribute("abdomen");	
-		
-		pageContext.setAttribute("fullBodyList", fullBodyList);
-		pageContext.setAttribute("upperBodyList", upperBodyList);
-		pageContext.setAttribute("lowerBodyList", lowerBodyList);
-		pageContext.setAttribute(" abdomenList",  abdomenList);
-		
-		
-	%>
-	
-	
-	<table border ="1">
+	<table border ="1">	
 		<tr>
 			<th>번호</th>
-			<th>채널명</th>
+			<th>제목</th>
 			<th>부위</th>
 			<th>유튜브 링크</th>
 			<th>조회수</th>
 		</tr>
 		
-		<c:forEach var = "video" items = "${fullBodyList}" varStatus = "status">
+		<c:forEach var = "video" items = "${popVideos}" varStatus = "status">
 				<%-- ${status.count} : ${movie}<br> --%>
 				<tr>
 					<td>${status.count}</td>
-					<td>${video.getChannelName()}</td>
-					<td>${video.getFitPartName()}</td>
-					<td>${video.getYoutubeId()}</td>
-					<td>${video.getViewCnt()}</td>
+					 <td> <a href = "video?act=reviewPage&youtubeId=${video.youtubeId}"> ${video.title}</a></td>
+					<td>${video.fitPartName}</td>
+					<td>${video.youtubeId}</td>
+					<td>${video.viewCnt}</td>
+					<%-- <td>${video.getReviews()}</td>	 --%>
+				</tr>
+								
+		</c:forEach>
+	</table>	
+	
+	
+	<h2>운동 부위 선택</h2>
+	
+	<table border ="1">
+		<tr>
+			<th>번호</th>
+			<th>제목</th>
+			<th>부위</th>
+			<th>유튜브 링크</th>
+			<th>조회수</th>
+		</tr>
+		
+				<c:forEach var = "video" items = "${fullBody}" varStatus = "status">
+				<%-- ${status.count} : ${movie}<br> --%>
+				<tr>
+					<td>${status.count}</td>
+					<td>${video.title}</td>
+					<td>${video.fitPartName}</td>
+					<td>${video.youtubeId}</td>
+					<td>${video.viewCnt}</td>
+					<%-- <td>${video.getReviews()}</td>	 --%>
+				</tr>
+								
+		</c:forEach>
+		
+		<c:forEach var = "video" items = "${abdomen}" varStatus = "status">
+				<%-- ${status.count} : ${movie}<br> --%>
+				<tr>
+					<td>${status.count}</td>
+					<td>${video.title}</td>
+					<td>${video.fitPartName}</td>
+					<td>${video.youtubeId}</td>
+					<td>${video.viewCnt}</td>
+					<%-- <td>${video.getReviews()}</td>	 --%>
+				</tr>
+								
+		</c:forEach>
+		
+		<c:forEach var = "video" items = "${upperBody}" varStatus = "status">
+				<%-- ${status.count} : ${movie}<br> --%>
+				<tr>
+					<td>${status.count}</td>
+					<td>${video.title}</td>
+					<td>${video.fitPartName}</td>
+					<td>${video.youtubeId}</td>
+					<td>${video.viewCnt}</td>
 					<%-- <td>${video.getReviews()}</td>	 --%>
 				</tr>
 								
 		</c:forEach>
 	
+	
+		<c:forEach var = "video" items = "${lowerBody}" varStatus = "status">
+				<%-- ${status.count} : ${movie}<br> --%>
+				<tr>
+					<td>${status.count}</td>
+					<td>${video.title}</td>
+					<td>${video.fitPartName}</td>
+					<td>${video.youtubeId}</td>
+					<td>${video.viewCnt}</td>
+					<%-- <td>${video.getReviews()}</td>	 --%>
+				</tr>
+								
+		</c:forEach>
+		
 	</table>
-	
-	
-	
-	
-	<a href = "video?act=favoriteList">
-		Video1
-	</a>
-	
-	<a href = "video?act=favoriteList">
-		Video2
-	</a>
-	
-	<a href = "video?act=favoriteList">
-		Video3
-	</a>
-	
-	
-	<h2>운동 부위 선택</h2>
 	
 	<a href = "video?act=bodypartList&bodyPart=전신">
 		전신
@@ -91,10 +126,6 @@
 	<h2>모든 비디오 선택</h2>
 	<a href = "video?act=selectAll">
 		모든 비디오 확인
-	</a>
-	
-	<a href = "video?act=selectAll">
-		모든 비디오 확인 Test
 	</a>
 
 </body>

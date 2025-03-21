@@ -21,12 +21,14 @@ public class VideoRepositoryImpl implements VideoRepository{
 	
 	// 생성한 객체에 Map 형식으로 데이터를 관리한다.
 	private VideoRepositoryImpl() {
-		map.put(1, new Video("https://www.youtube.com/watch?v=7TLk7pscICk", "채널1", 10, "복부", "누워서 5분 복부"));
-		map.put(2, new Video("https://www.youtube.com/watch?v=cMkZ6A7wngk", "채널2", 15, "전신", "전신 올인원"));
-		map.put(3, new Video("https://www.youtube.com/watch?v=4kZHHPH6heY", "채널3", 18, "전신", "전신운동 근력 유산소"));
-		map.put(4, new Video("https://www.youtube.com/watch?v=DehgWgRde-I", "채널4", 25, "복부", "악마의 복근 운동"));
-		map.put(5, new Video("https://www.youtube.com/watch?v=DWYDL-WxF1U", "채널5", 35, "하체", "하체날, 딱 10분밖에 없다면-스쿼트 10가지 동작"));
-		map.put(6, new Video("https://www.youtube.com/watch?v=Hx8Lc_0hUaI", "채널6", 28, "상체", "운동할 시간이 없다는 사람에게 보여주세요... 제발"));
+		map.put(1, new Video("https://www.youtube.com/watch?v=7TLk7pscICk", "복부짱", 10, "복부", "누워서 5분 복부"));
+		map.put(2, new Video("https://www.youtube.com/watch?v=cMkZ6A7wngk", "전신짱", 15, "전신", "전신 올인원"));
+		map.put(3, new Video("https://www.youtube.com/watch?v=4kZHHPH6heY", "전신근력짱", 18, "전신", "전신운동 근력 유산소"));
+		map.put(4, new Video("https://www.youtube.com/watch?v=DehgWgRde-I", "복부킹왕짱", 25, "복부", "악마의 복근 운동"));
+		map.put(5, new Video("https://www.youtube.com/watch?v=DWYDL-WxF1U", "하체짱", 35, "하체", "하체날, 딱 10분밖에 없다면-스쿼트 10가지 동작"));
+		map.put(6, new Video("https://www.youtube.com/watch?v=Hx8Lc_0hUaI", "상체짱", 28, "상체", "운동할 시간이 없다는 사람에게 보여주세요... 제발"));
+		map.put(7, new Video("https://www.youtube.com/watch?v=C4_2puAkxfs", "하체킹왕짱", 40, "하체", "하루 한 번! 꼭 해야하는 10분 기본 하체근력 운동 홈트 (층간소음🙅🏻‍♀️)"));
+		map.put(8, new Video("https://www.youtube.com/watch?v=UdvFhqxaBNo&list=PL2OrN5q5pzIvKy9bqhqYkZgklLZLVG8bF&index=1", "복부킹왕짱", 3, "복부", "하복부 지방 확실하게 태우는 단 10분 운동 - No 반복, No 휴식"));
 		
 	}
 	

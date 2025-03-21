@@ -10,15 +10,25 @@
 </head>
   
 <body>
-
-	<table>
+	<table border ="1">
 		<tr>
-			<th>ID</th>
 			<th>제목</th>
-			<th>쓰니</th>
+			<th>신체 부위</th>
+			<th>채널명</th>
 			<th>조회수</th>
-			<th>등록일</th>
 		</tr>
+		
+
+		<tr>
+			<td>${selVid.title}</td>
+			<!-- 리뷰 상세보기로 링크 연결 --> 
+			<td>${selVid.fitPartName }</td>
+			<td>${selVid.channelName}</td>
+			<td>${selVid.viewCnt}</td>
+		</tr>
+
+		
+		
 		<c:forEach items="${list}" var="review">
 			<tr>
 				<td>${review.reviewId}</td>
